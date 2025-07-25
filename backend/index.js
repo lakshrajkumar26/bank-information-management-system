@@ -4,7 +4,7 @@ const PORT = 3000
 const user = require("./models/User");
 const db = require('./config/dbConnection');
 const authRoutes = require('./routes/authRoutes');
-const userRouters = require('./routes/temp');
+const userRouters = require('./routes/userRoutes');
 app.use(express.json());
 
 app.get("/", (req,res)=>{
