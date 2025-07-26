@@ -27,7 +27,7 @@ const login = async (req, res) => {
         const user = await User.findOne({ username });   //common error dont use Find its give array so error in matching user
         if (!user) return res.status(404).json({ message: `User with username ${username} not founnd` })
 
-        const isMatch = bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) return res.status(400).json({ message: "invalid credintials" })
 
         //if matched 

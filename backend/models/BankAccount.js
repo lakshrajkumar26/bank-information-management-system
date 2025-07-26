@@ -33,4 +33,5 @@ const bankAccountSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("BankAccount", bankAccountSchema);
+const bankAccount = mongoose.model("BankAccount", bankAccountSchema);
+module.exports  = bankAccount;

@@ -5,6 +5,7 @@ const user = require("./models/User");
 const db = require('./config/dbConnection');
 const authRoutes = require('./routes/authRoutes');
 const userRouters = require('./routes/UserRoutes');
+const bankRoutes = require("./routes/bankRoutes");
 app.use(express.json());
 
 app.get("/", (req,res)=>{
@@ -13,6 +14,7 @@ app.get("/", (req,res)=>{
 
 app.use('/api/auth',authRoutes);
 app.use('/api/users',userRouters);
+app.use("/api/user", bankRoutes);
 
 app.listen( PORT , ()=>{
     console.info(`Server is runnning at port ${PORT}` )
