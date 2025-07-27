@@ -3,49 +3,81 @@ import axios from 'axios';
 
 const AdminPanel = () => {
   const [accounts, setAccounts] = useState([]);
-  const [search, setSearch] = useState('');
-  const [filterBy, setFilterBy] = useState('username');
+  const [searchParams, setSearchParams] = useState({
+    username: '',
+    bankName: '',
+    ifscCode: '',
+  });
 
-  const fetchAccounts = async () => {
+  const token = localStorage.getItem('token');
+
+  // Fetch all accounts (initial load)
+  const fetchAllAccounts = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get('http://localhost:5000/api/admin/all-bank-accounts', {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await axios.get('http://localhost:3000/api/admin/all-bank-accounts', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       setAccounts(res.data);
     } catch (err) {
-      console.error("Error fetching accounts:", err);
-      
+      console.error(err);
+    }
+  };
+
+  // Fetch filtered accounts
+  const handleSearch = async () => {
+    try {
+      const { username, bankName, ifscCode } = searchParams;
+
+      const res = await axios.get('http://localhost:3000/api/admin/search', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          username,
+          bankName,
+          ifscCode,
+        },
+      });
+
+      setAccounts(res.data);
+    } catch (err) {
+      console.error(err);   
     }
   };
 
   useEffect(() => {
-    fetchAccounts();
+    fetchAllAccounts(); // on initial load
   }, []);
 
-  const filteredAccounts = accounts.filter((acc) =>
-    acc[filterBy]?.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div className="admin-panel">
-      <h2> Admin Panel - All Bank Accounts</h2>
+    <div style={{ padding: '2rem' }}>
+      <h2>👮 Admin Panel</h2>
 
-      <div className="filter-section">
+      {/* Search Filters */}
+      <div style={{ marginBottom: '1rem' }}>
         <input
-          placeholder={`Search by ${filterBy}`}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Username"
+          value={searchParams.username}
+          onChange={(e) => setSearchParams({ ...searchParams, username: e.target.value })}
         />
-
-        <select onChange={(e) => setFilterBy(e.target.value)} value={filterBy}>
-          <option value="username">Username</option>
-          <option value="bankName">Bank Name</option>
-          <option value="ifscCode">IFSC Code</option>
-        </select>
+        <input
+          placeholder="Bank Name"
+          value={searchParams.bankName}
+          onChange={(e) => setSearchParams({ ...searchParams, bankName: e.target.value })}
+        />
+        <input
+          placeholder="IFSC Code"
+          value={searchParams.ifscCode}
+          onChange={(e) => setSearchParams({ ...searchParams, ifscCode: e.target.value })}
+        />
+        <button onClick={handleSearch}>🔍 Search</button>
+        <button onClick={fetchAllAccounts}>🔄 Reset</button>
       </div>
 
-      <table>
+      {/* Table of Accounts */}
+      <table border="1" cellPadding="8" style={{ width: '100%' }}>
         <thead>
           <tr>
             <th>Username</th>
@@ -57,16 +89,24 @@ const AdminPanel = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredAccounts.map((acc, idx) => (
-            <tr key={idx}>
-              <td>{acc.username}</td>
-              <td>{acc.bankName}</td>
-              <td>{acc.ifscCode}</td>
-              <td>{acc.branchName}</td>
-              <td>{acc.accountNumber}</td>
-              <td>{acc.accountHolderName}</td>
+          {accounts.length > 0 ? (
+            accounts.map((acc, i) => (
+              <tr key={i}>
+                <td>{acc.username || acc.user?.username}</td>
+                <td>{acc.bankName}</td>
+                <td>{acc.ifscCode}</td>
+                <td>{acc.branchName}</td>
+                <td>{acc.accountNumber}</td>
+                <td>{acc.accountHolderName}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6" style={{ textAlign: 'center' }}>
+                No accounts found
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

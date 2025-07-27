@@ -1,18 +1,33 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
 
-const ProtectedRoute = ({ children }) => {      //wrap inside 
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const token = localStorage.getItem("token");
 
+  if (!token) return <Navigate to="/login" replace />;
 
-  if (!token) {
+  try {
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+
+    //  Token expired
+    if (decoded.exp < currentTime) {
+      localStorage.removeItem("token");
+      return <Navigate to="/login" replace />;
+    }
+
+    //  Role not allowed
+    if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
+      return <Navigate to="/unauthorized" replace />;
+    }
+
+    //  All good
+    return children;
+  } catch (error) {
+    localStorage.removeItem("token");
     return <Navigate to="/login" replace />;
   }
-
-
-    return children;
 };
 
 export default ProtectedRoute;
-
-

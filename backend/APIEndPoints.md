@@ -6,7 +6,7 @@ This document outlines all backend API routes for the **Bank Information Managem
 
 ## 🚀 Server Health
 
-| Method | Endpoint | Description |
+| Method | Endpoint | Description | ✅ 
 |--------|----------|-------------|
 | GET    | `/health` | Check if the server is running |
 
@@ -14,7 +14,7 @@ This document outlines all backend API routes for the **Bank Information Managem
 
 ## 🔐 Authentication Routes
 
-**Base URL:** `/api/auth`
+**Base URL:** `/api/auth`  ✅ 
 
 | Method | Endpoint         | Description                     |
 |--------|------------------|---------------------------------|
@@ -27,7 +27,7 @@ This document outlines all backend API routes for the **Bank Information Managem
 
 **Base URL:** `/api/users`
 
-> These routes are protected and require a valid JWT + role
+> These routes are protected and require a valid JWT + role  ✅ (not requried)
 
 | Method | Endpoint     | Roles Allowed              | Description                        |
 |--------|--------------|----------------------------|------------------------------------|
@@ -56,11 +56,11 @@ This document outlines all backend API routes for the **Bank Information Managem
 
 **Base URL:** `/api/admin`
 
-> These routes are **protected by JWT** and accessible **only to admins**.
+> These routes are **protected by JWT** and accessible **only to admins**.    ❌ check
 
 | Method | Endpoint                    | Description                                                |
 |--------|-----------------------------|------------------------------------------------------------|
-| GET    | `/all-bank-accounts`        | View all bank accounts of all users                        |
+| GET    |`api/admin/all-bank-accounts`| View all bank accounts of all users                        |
 | GET    | `/search`                   | Search/filter bank accounts by username, bankName, IFSC<br>**Query params:** `?username=laksh&bankName=SBI&ifscCode=SBIN0001` |
 
 ---
