@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { z } from 'zod';
+import axios from 'axios';
 
-// ✅ Zod schema
+//  Zod schema
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
@@ -19,21 +20,30 @@ const Register = () => {
     role: 'user', // default role
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = registerSchema.safeParse(formData);
+    const result = registerSchema.safeParse(formData);   //result.data 
 
     if (!result.success) {
-      
+
       console.error(result.error.format());
       return;
     }
-
+    
     //passed validation
     console.log("Register Data:", result.data);
-    
-    
+
+   
+ try {
+      const res = await axios.post("http://localhost:3000/api/auth/register", result.data);
+      console.log("Registration Successfull // Backend", res.data);
+    }  
+
+ catch (err) {
+      console.error("❌ Registration error:", err.response?.data || err.message);
+    }
+
   };
 
   return (

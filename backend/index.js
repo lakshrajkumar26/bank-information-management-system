@@ -7,7 +7,13 @@ const authRoutes = require('./routes/authRoutes');
 const userRouters = require('./routes/UserRoutes');
 const bankRoutes = require("./routes/bankRoutes");
 const adminRoutes = require('./routes/adminRoutes');
+const cors = require("cors");
+app.use(cors({
+    origin: "*" ,
+    crendential : true,
+}));
 app.use(express.json());
+
 
 app.get("/health", (req,res)=>{
     res.send("server is healthy")
