@@ -11,7 +11,10 @@ import {
   VisibilityOff,
   CheckCircle,
   Error,
-  Warning
+  Warning,
+  AdminPanelSettings,
+  SupervisorAccount,
+  Person as PersonIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import './register.css';
@@ -22,7 +25,8 @@ const Register = () => {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'user' // Default role
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +36,8 @@ const Register = () => {
     username: { isValid: false, message: '', isTouched: false },
     email: { isValid: false, message: '', isTouched: false },
     password: { isValid: false, message: '', isTouched: false },
-    confirmPassword: { isValid: false, message: '', isTouched: false }
+    confirmPassword: { isValid: false, message: '', isTouched: false },
+    role: { isValid: true, message: '', isTouched: false }
   });
 
   const registerSchema = z.object({
@@ -48,7 +53,10 @@ const Register = () => {
       .min(6, 'Password must be at least 6 characters')
       .max(50, 'Password must be less than 50 characters')
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+    role: z.enum(['admin', 'manager', 'user'], {
+      errorMap: () => ({ message: 'Please select a valid role' })
+    })
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -113,6 +121,16 @@ const Register = () => {
         }
         return { isValid: true, message: 'Passwords match', isTouched: true };
       }
+
+      if (name === 'role') {
+        if (!value || value === '') {
+          return { isValid: false, message: 'Please select a role', isTouched: true };
+        }
+        if (!['admin', 'manager', 'user'].includes(value)) {
+          return { isValid: false, message: 'Please select a valid role', isTouched: true };
+        }
+        return { isValid: true, message: 'Role is valid', isTouched: true };
+      }
       
       return { isValid: false, message: '', isTouched: false };
     } catch (error) {
@@ -162,17 +180,19 @@ const Register = () => {
     const emailValidation = validateField('email', formData.email);
     const passwordValidation = validateField('password', formData.password);
     const confirmPasswordValidation = validateField('confirmPassword', formData.confirmPassword);
+    const roleValidation = validateField('role', formData.role);
     
     setValidation({
       username: usernameValidation,
       email: emailValidation,
       password: passwordValidation,
-      confirmPassword: confirmPasswordValidation
+      confirmPassword: confirmPasswordValidation,
+      role: roleValidation
     });
 
     // Check if any field is invalid
     if (!usernameValidation.isValid || !emailValidation.isValid || 
-        !passwordValidation.isValid || !confirmPasswordValidation.isValid) {
+        !passwordValidation.isValid || !confirmPasswordValidation.isValid || !roleValidation.isValid) {
       toast.error('Please fix the validation errors before submitting');
       setIsLoading(false);
       return;
@@ -194,7 +214,8 @@ const Register = () => {
       const response = await axios.post('https://bank-information-management-system-oz4y.onrender.com/api/auth/register', {
         username: formData.username,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        role: formData.role
       });
       
       if (response.data.token) {
@@ -246,6 +267,19 @@ const Register = () => {
     const field = validation[fieldName];
     if (!field.isTouched) return '';
     return field.isValid ? 'valid' : 'invalid';
+  };
+
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case 'admin':
+        return <AdminPanelSettings />;
+      case 'manager':
+        return <SupervisorAccount />;
+      case 'user':
+        return <PersonIcon />;
+      default:
+        return <PersonIcon />;
+    }
   };
 
   return (
@@ -378,11 +412,38 @@ const Register = () => {
             {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
           </div>
 
+          <div className="form-group">
+            <label className="form-label">
+              <AdminPanelSettings className="input-icon" />
+              Role
+            </label>
+            <div className="input-wrapper">
+              <select
+                name="role"
+                className={`form-input form-select ${getValidationColor('role')}`}
+                value={formData.role}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="user">User - Manage your own bank accounts</option>
+                <option value="manager">Manager - Limited administrative access</option>
+                <option value="admin">Admin - Full system access</option>
+              </select>
+              {getValidationIcon('role')}
+            </div>
+            {validation.role.isTouched && (
+              <div className={`validation-message ${validation.role.isValid ? 'valid' : 'invalid'}`}>
+                {validation.role.message}
+              </div>
+            )}
+            {errors.role && <p className="error-message">{errors.role}</p>}
+          </div>
+
           <button
             type="submit"
             className={`auth-btn auth-btn-primary ${isLoading ? 'loading' : ''}`}
             disabled={isLoading || !validation.username.isValid || !validation.email.isValid || 
-                     !validation.password.isValid || !validation.confirmPassword.isValid}
+                     !validation.password.isValid || !validation.confirmPassword.isValid || !validation.role.isValid}
           >
             {isLoading && <div className="spinner"></div>}
             <span>{isLoading ? 'Creating Account...' : 'Create Account'}</span>
