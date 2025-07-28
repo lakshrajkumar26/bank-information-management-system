@@ -12,6 +12,7 @@ const adminRoutes = require('./backend/routes/adminRoutes');
 
 const cors = require("cors");
 
+// CORS configuration for Glitch
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL || "https://your-frontend-domain.com"
@@ -25,6 +26,21 @@ app.get("/health", (req,res)=>{
     res.send("server is healthy")
 });
 
+// Root endpoint for Glitch
+app.get("/", (req,res)=>{
+    res.json({
+        message: "Banking Platform API",
+        status: "running",
+        endpoints: {
+            health: "/health",
+            auth: "/api/auth",
+            users: "/api/users",
+            bankAccounts: "/api/user/bank-accounts",
+            admin: "/api/admin"
+        }
+    });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRouters);
@@ -33,7 +49,7 @@ app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error('Error:', err.stack);
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
@@ -43,6 +59,8 @@ app.use('*', (req, res) => {
 });
 
 app.listen(PORT, ()=>{
-    console.info(`Server is running at port ${PORT}`);
-    console.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.info(`🚀 Server is running at port ${PORT}`);
+    console.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.info(`📊 Health check: http://localhost:${PORT}/health`);
+    console.info(`🔗 API base: http://localhost:${PORT}/api`);
 }); 

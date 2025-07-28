@@ -23,5 +23,14 @@
   },
   "engines": {
     "node": ">=16.0.0"
-  }
+  },
+  "keywords": [
+    "banking",
+    "express",
+    "mongodb",
+    "react",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "ISC"
 } 
