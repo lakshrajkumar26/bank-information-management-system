@@ -1,0 +1,19 @@
+{
+  "name": "banking-platform",
+  "version": "1.0.0",
+  "description": "Banking Platform - Full Stack Application",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+} 
