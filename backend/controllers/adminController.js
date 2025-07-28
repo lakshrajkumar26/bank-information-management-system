@@ -1,12 +1,15 @@
 const BankAccount = require("../models/BankAccount");
 const User = require("../models/User");
 
-
-
 //GET all users' bank accounts (admin only)
 const getAllBankAccounts = async (req, res) => {
     try {
-        const AllUsers = await BankAccount.find().populate("user", "email username role")     //give target id  , then thing you need
+        // Check if user is admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. Admin role required." });
+        }
+
+        const AllUsers = await BankAccount.find().populate("user", "email username role");
         res.status(200).json(AllUsers);
     }
     catch (err) {
@@ -14,10 +17,14 @@ const getAllBankAccounts = async (req, res) => {
     }
 }
 
-//Search & filter by username, bank name, IFSC
-
+//Search & filter by username, bank name, IFSC (admin only)
 const searchBankAccounts = async (req, res) => {
     try {
+        // Check if user is admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. Admin role required." });
+        }
+
         const { username, bankName, ifscCode } = req.query;
         const query = {};
         if (bankName) {

@@ -4,11 +4,15 @@ const User = require("../models/User")
 
 
 
-
 const register = async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
+
         const hashPassword = await bcrypt.hash(password, 10);
+
+        const searchUser = await User.findOne({username});
+        if(searchUser) 
+            {return res.status(500).json("Username already exist")}
 
         const newUser = await User.create({ username, email, password: hashPassword, role });
         res.status(201).json({ message: `User registered with UserName ${username}` })
@@ -22,10 +26,10 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role } = req.body;                    
 
         const user = await User.findOne({ username });   //common error dont use Find its give array so error in matching user
-        if (!user) return res.status(404).json({ message: `User with username ${username} not founnd` })
+        if (!user) return res.status(404).json({ message: `User with username ${username} not found` })
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) return res.status(400).json({ message: "invalid credintials" })

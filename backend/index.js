@@ -7,10 +7,12 @@ const authRoutes = require('./routes/authRoutes');
 const userRouters = require('./routes/UserRoutes');
 const bankRoutes = require("./routes/bankRoutes");
 const adminRoutes = require('./routes/adminRoutes');
+
 const cors = require("cors");
+
 app.use(cors({
     origin: "*" ,
-    crendential : true,
+    credentials : true,
 }));
 app.use(express.json());
 
