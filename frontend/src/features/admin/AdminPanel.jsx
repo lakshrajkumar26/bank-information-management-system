@@ -49,7 +49,7 @@ const AdminPanel = () => {
       const token = localStorage.getItem('token');
       console.log('Token available:', !!token);
       
-      const response = await axios.get('http://localhost:3000/api/admin/all-bank-accounts', {
+      const response = await axios.get('https://bank-information-management-system-oz4y.onrender.com/api/admin/all-bank-accounts', {
         headers: {
           Authorization: `Bearer ${token}`
         }

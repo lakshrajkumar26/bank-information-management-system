@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:3000/api/user",
+  baseURL: "https://bank-information-management-system-oz4y.onrender.com/api/user",
 });
 
 // Add token to every request
