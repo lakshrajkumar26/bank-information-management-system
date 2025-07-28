@@ -23,9 +23,14 @@ const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
       return <Navigate to="/login" replace />;
     }
 
-    // Allow all authenticated users to access the admin panel
-    // Backend will handle authorization and redirect to unauthorized if needed
-    console.log('Access granted to admin panel - backend will handle authorization');
+    // Check if user has admin role
+    if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
+      console.log('Access denied - redirecting to main page');
+      window.location.href = 'https://bank-information-management-system-t81l.onrender.com/';
+      return null;
+    }
+    
+    console.log('Access granted to admin panel');
     return children;
   } catch (error) {
     console.error('Error decoding token:', error);

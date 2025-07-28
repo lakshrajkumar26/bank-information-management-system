@@ -19,7 +19,8 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
     //  Role not allowed
     if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
-      return <Navigate to="/unauthorized" replace />;
+      window.location.href = 'https://bank-information-management-system-t81l.onrender.com/';
+      return null;
     }
 
     //  All good

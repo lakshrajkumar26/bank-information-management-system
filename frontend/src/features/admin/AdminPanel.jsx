@@ -62,7 +62,7 @@ const AdminPanel = () => {
       
       if (error.response?.status === 403) {
         toast.error('Access denied. Admin role required.');
-        window.location.href = '/unauthorized';
+        window.location.href = 'https://bank-information-management-system-t81l.onrender.com/';
       } else {
         toast.error('Failed to load bank accounts');
       }
