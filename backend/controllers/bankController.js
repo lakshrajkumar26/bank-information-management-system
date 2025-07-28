@@ -1,7 +1,7 @@
 const BankAccount = require("../models/BankAccount");
 
 
-const getAllBankAcoount = async (req, res) => {
+const getAllBankAccount = async (req, res) => {
   try {
     const accounts = await BankAccount.find({ user: req.user.id });
     res.status(200).json(accounts);
@@ -74,7 +74,7 @@ const deleteBankAccount = async (req, res) => {
 };
 
 module.exports = {
-  getAllBankAcoount,
+  getAllBankAccount,
   addBankAccount,
   updateAccount,
   deleteBankAccount,

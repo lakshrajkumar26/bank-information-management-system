@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
-const PORT = 3000
+require("dotenv").config();
+
+const PORT = process.env.PORT || 3000;
 const user = require("./models/User");
 const db = require('./config/dbConnection');
 const authRoutes = require('./routes/authRoutes');
@@ -11,24 +13,36 @@ const adminRoutes = require('./routes/adminRoutes');
 const cors = require("cors");
 
 app.use(cors({
-    origin: "*" ,
-    credentials : true,
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.FRONTEND_URL || "https://your-frontend-domain.com"
+        : "*",
+    credentials: true,
 }));
 app.use(express.json());
 
-
+// Health check endpoint
 app.get("/health", (req,res)=>{
     res.send("server is healthy")
-})
+});
 
-app.use('/api/auth',authRoutes);
-app.use('/api/users',userRouters);
+// API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRouters);
 app.use("/api/user", bankRoutes);
-
-
 app.use('/api/admin', adminRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong!' });
+});
 
-app.listen( PORT , ()=>{
-    console.info(`Server is runnning at port ${PORT}` )
-})
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+});
+
+app.listen(PORT, ()=>{
+    console.info(`Server is running at port ${PORT}`);
+    console.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
